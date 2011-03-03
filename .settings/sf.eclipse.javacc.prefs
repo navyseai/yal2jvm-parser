@@ -1,0 +1,7 @@
+#Thu Mar 03 22:41:12 WET 2011
+CLEAR_CONSOLE=false
+JJ_NATURE=true
+RUNTIME_JJJAR=/home/alex/.eclipse/org.eclipse.platform_3.5.0_155965261/plugins/sf.eclipse.javacc_1.5.24/javacc.jar
+RUNTIME_JTBJAR=/home/alex/.eclipse/org.eclipse.platform_3.5.0_155965261/plugins/sf.eclipse.javacc_1.5.24/jtb-1.4.4.jar
+SUPPRESS_WARNINGS=false
+eclipse.preferences.version=1
