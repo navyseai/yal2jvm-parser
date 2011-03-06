@@ -1,0 +1,180 @@
+options
+{
+	LOOKAHEAD=1;
+}
+PARSER_BEGIN(yal2jvm)
+public class yal2jvm
+{
+	public static void main(String args[]) throws ParseException {
+			yal2jvm myLang = new yal2jvm(System.in);
+			SimpleNode root = myLang.Expression(); // devolve referência para o nó raiz da árvore
+			root.dump(""); // imprime no ecrã a árvore
+			//System.out.println("Valor da expressão: "+myCalc.eval(root));
+	}
+
+
+	int eval(SimpleNode node) {
+		if(node.jjtGetNumChildren() == 0) // leaf node with integer value
+			return node.val;
+		else if(node.jjtGetNumChildren() == 1) // only one child
+			return this.eval((SimpleNode) node.jjtGetChild(0));
+		SimpleNode lhs = (SimpleNode) node.jjtGetChild(0); //left child
+		SimpleNode rhs = (SimpleNode) node.jjtGetChild(1); // right child
+
+		
+//		switch(node.id) {//			case CalculatorTreeConstants.JJTADD : return eval( lhs ) + eval( rhs );//			case CalculatorTreeConstants.JJTSUB : return eval( lhs ) - eval( rhs );//			case CalculatorTreeConstants.JJTMUL : return eval( lhs ) * eval( rhs );//			case CalculatorTreeConstants.JJTDIV : return eval( lhs ) / eval( rhs );//		default : // abort//				System.out.println("Operador ilegal!");//				System.exit(1);//			}
+		return 0;
+	}
+}
+
+
+PARSER_END(yal2jvm)
+
+
+<DEFAULT> SKIP : {
+" "
+| "\t"
+| "\n"
+| "\r"
+| <"//" (~["\n","\r"])* ("\n" | "\r" | "\r\n")>
+| <"/*" (~["*"])* "*" ("*" | ~["*","/"] (~["*"])* "*")* "/">
+}
+/* reserved words */
+<DEFAULT> TOKEN : {
+<RELA_OP: ">" | "<" | "<=" | ">=" | "==" | "!=">
+| <ADDSUB_OP: "+" | "-">
+| <ARITH_OP: "*" | "/" | "<<" | ">>" | ">>>">
+| <BITWISE_OP: "&" | "|" | "^">
+| <NOT_OP: "!">
+| <WHILE: "while">
+| <IF: "if">
+| <ELSE: "else">
+| <ASSIGN: "=">
+| <ASPA: "\"">
+| <LPAR: "(">
+| <RPAR: ")">
+| <VIRG: ",">
+| <PVIRG: ";">
+| <LCHAVETA: "{">
+| <RCHAVETA: "}">
+| <FUNCTION: "function">
+| <MODULE: "module">
+| <SIZE: "size">
+}
+<DEFAULT> TOKEN : {
+<INTEGER: (<DIGIT>)+>
+| <ID: <LETTER> (<LETTER> | <DIGIT>)*>
+| <#LETTER: ["$","A"-"Z","_","a"-"z"]>
+| <#DIGIT: ["0"-"9"]>
+| <STRING: "\"" (["a"-"z","A"-"Z","0"-"9",":"," ","="])+ "\"">
+}
+
+SimpleNode Expression(): {}
+{
+	{return jjtThis;} // código Java entre chavetas
+}
+
+void Module():{}
+{
+	<MODULE> <ID> <LCHAVETA> ( Declaration() )* ( Function() )* <RCHAVETA>
+}
+
+void Declaration():{}
+{
+	( <ID> (ArrayElement())? ) ( <ASSIGN> ( ( "[" ArraySize() "]" ) | ( <ADDSUB_OP> )? <INTEGER> ) )? <PVIRG>
+}
+
+void Function():{}
+{
+	( <FUNCTION>(  ( ArrayElement() | <ID> ) <ASSIGN> <ID> <LPAR> ( Varlist() )? <RPAR> ) | ( <ID> <LPAR> ( Varlist() )? <RPAR> ) ) <LCHAVETA> Stmtlst() <RCHAVETA>
+}
+
+void Varlist():{}
+{
+	( ArrayElement() | <ID> ) ( <VIRG> ( ArrayElement() | <ID> ) )*
+}
+
+void ArrayElement():{}
+{
+	"[" "]"
+}
+
+// not needed anymore, change was made were its called
+//void ScalarElement():{}
+//{//  <ID>
+//}
+
+void Stmtlst():{}
+{
+	( Stmt() )*
+}
+
+void Stmt():{}
+{	  While() | If() |
+	  Assign() | Call() <PVIRG>
+}
+
+void Assign():{}
+{
+	Lhs() <ASSIGN> Rhs() <PVIRG>
+}
+
+void Lhs():{}
+{	<ID> ( ArrayAccess() | ScalarAccess())
+}
+
+void Rhs():{}
+{ 
+	( Term() ( ( <ARITH_OP> | <BITWISE_OP> | <ADDSUB_OP> ) Term() )? )
+	|
+	"[" ArraySize() "]"
+}
+
+void ArraySize():{}
+{ 
+	(<ID> ScalarAccess()) | <INTEGER>
+}
+
+void Term():{}
+{
+	( <ADDSUB_OP> )? ( <INTEGER> | <ID>	( Call() |  ( ArrayAccess() | ScalarAccess())) )
+}
+
+void Exprtest():{}
+{
+	<LPAR> Lhs() <RELA_OP> Rhs() <RPAR>
+}
+
+void While():{}
+{
+	<WHILE> Exprtest() <LCHAVETA> Stmtlst() <RCHAVETA>
+}
+
+void If():{}
+{  <IF> Exprtest() <LCHAVETA> Stmtlst() <RCHAVETA> ( <ELSE> <LCHAVETA> Stmtlst() <RCHAVETA> )?
+}
+
+void Call():{}
+{
+   ( "." <ID> )? <LPAR> ( ArgumentList() )? <RPAR>
+}
+
+void ArgumentList():{}
+{  Argument() ( <VIRG> Argument() )*
+}
+
+void Argument():{}
+{  ( <ID> | <STRING> | <INTEGER> )
+}
+
+void ArrayAccess():{}
+{  "[" Index() "]"
+}
+
+void ScalarAccess():{}
+{  ( "." <SIZE> )?
+}
+
+void Index():{}
+{  <ID> | <INTEGER>
+}
