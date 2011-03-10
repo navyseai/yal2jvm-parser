@@ -3,7 +3,7 @@ del *.class
 echo -------------
 echo Skipping - Tree
 echo -------------
-echo call jjtree Calculator.jjt
+echo call jjtree yal2jvm.jjt
 echo
 echo -------------
 echo Starting - Compiling yal2jvm.jj
