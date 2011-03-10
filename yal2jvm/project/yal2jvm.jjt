@@ -1,6 +1,7 @@
 options
 {
-	LOOKAHEAD=1; // TODO: change this to only use lookahead 2 where is necessary
+
+	LOOKAHEAD=2; // TODO: change this to only use lookahead 2 where is necessary
 }
 PARSER_BEGIN(yal2jvm)
 public class yal2jvm
@@ -76,7 +77,9 @@ SimpleNode Expression(): {}
 
 void Module():{}
 {
-	<MODULE> <ID> <LCHAVETA> ( Declaration() )* ( Function() )* <RCHAVETA>
+	<MODULE> <ID> <LCHAVETA>
+    (Declaration())* (Function())*
+	 <RCHAVETA>
 }
 
 void Declaration():{}
@@ -137,7 +140,8 @@ void ArraySize():{}
 
 void Term():{}
 {
-	( <ADDSUB_OP> )? ( <INTEGER> | <ID>	( Call() |  ( ArrayAccess() | ScalarAccess())) )
+	( <ADDSUB_OP> )? ( <INTEGER> | LOOKAHEAD(3) <ID>	( ArrayAccess() | (	( Call() | ScalarAccess()) ))
+	)
 }
 
 void Exprtest():{}
@@ -172,7 +176,7 @@ void ArrayAccess():{}
 }
 
 void ScalarAccess():{}
-{  ( "." <SIZE> )?
+{  <ID> ( "." <SIZE> )?
 }
 
 void Index():{}
