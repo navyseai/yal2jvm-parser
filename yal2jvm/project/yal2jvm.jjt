@@ -1,6 +1,6 @@
 options
 {
-	LOOKAHEAD=1;
+	LOOKAHEAD=1; // TODO: change this to only use lookahead 2 where is necessary
 }
 PARSER_BEGIN(yal2jvm)
 public class yal2jvm
