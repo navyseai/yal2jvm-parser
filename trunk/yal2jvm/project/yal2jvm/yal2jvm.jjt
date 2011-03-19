@@ -1,18 +1,28 @@
 options
 {
-
-	LOOKAHEAD=2; // TODO: change this to only use lookahead 2 where is necessary
+	LOOKAHEAD=2; // TODO: change this to only use lookahead 1
 }
 PARSER_BEGIN(yal2jvm)
+package yal2jvm;
+import java.io.InputStreamReader;
+import java.io.BufferedReader;
+import java.io.IOException;
+	
 public class yal2jvm
-{
-	public static void main(String args[]) throws ParseException {
+{ 
+ 
+	public static void main(String[] args) throws ParseException, IOException
+	{
+    		BufferedReader in = new BufferedReader(new InputStreamReader(System.in));
+    		String strLine = in.readLine();
+	  
 			yal2jvm myLang = new yal2jvm(System.in);
-			SimpleNode root = myLang.Expression(); // devolve referência para o nó raiz da árvore
+			//SimpleNode root = myLang.Expression(); // devolve referência para o nó raiz da árvore
+			SimpleNode root = myLang.Module();
 			root.dump(""); // imprime no ecrã a árvore
+			in.close();
 			//System.out.println("Valor da expressão: "+myCalc.eval(root));
 	}
-
 
 	int eval(SimpleNode node) {
 		if(node.jjtGetNumChildren() == 0) // leaf node with integer value
@@ -22,7 +32,7 @@ public class yal2jvm
 		SimpleNode lhs = (SimpleNode) node.jjtGetChild(0); //left child
 		SimpleNode rhs = (SimpleNode) node.jjtGetChild(1); // right child
 
-		
+		// TODO: Delete
 //		switch(node.id) {//			case CalculatorTreeConstants.JJTADD : return eval( lhs ) + eval( rhs );//			case CalculatorTreeConstants.JJTSUB : return eval( lhs ) - eval( rhs );//			case CalculatorTreeConstants.JJTMUL : return eval( lhs ) * eval( rhs );//			case CalculatorTreeConstants.JJTDIV : return eval( lhs ) / eval( rhs );//		default : // abort//				System.out.println("Operador ilegal!");//				System.exit(1);//			}
 		return 0;
 	}
@@ -75,10 +85,10 @@ SimpleNode Expression(): {}
 	{return jjtThis;} // código Java entre chavetas
 }
 
-void Module():{}
+SimpleNode Module():{}
 {
 	<MODULE> <ID> <LCHAVETA>
-    (Declaration())* (Function())*
+     (Declaration())* (Function())*
 	 <RCHAVETA>
 }
 
@@ -140,7 +150,7 @@ void ArraySize():{}
 
 void Term():{}
 {
-	( <ADDSUB_OP> )? ( <INTEGER> | LOOKAHEAD(3) <ID>	( ArrayAccess() | (	( Call() | ScalarAccess()) ))
+	( <ADDSUB_OP> )? ( <INTEGER> | /*LOOKAHEAD(3)*/ <ID>	( ArrayAccess() | (	( Call() | ScalarAccess()) ))
 	)
 }
 
