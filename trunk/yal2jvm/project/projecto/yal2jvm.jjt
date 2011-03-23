@@ -2,26 +2,33 @@ options
 {
 	LOOKAHEAD=2; // TODO: change this to only use lookahead 1
 }
-PARSER_BEGIN(yal2jvm)
-package yal2jvm;
-import java.io.InputStreamReader;
-import java.io.BufferedReader;
-import java.io.IOException;
+PARSER_BEGIN(Yal2jvm)
+package projecto;
+import java.io.*;
+import javax.swing.JOptionPane;
 	
-public class yal2jvm
+public class Yal2jvm
 { 
  
-	public static void main(String[] args) throws ParseException, IOException
+	public static void main(String[] args) throws ParseException
 	{
-    		BufferedReader in = new BufferedReader(new InputStreamReader(System.in));
-    		String strLine = in.readLine();
-	  
-			yal2jvm myLang = new yal2jvm(System.in);
-			//SimpleNode root = myLang.Expression(); // devolve referência para o nó raiz da árvore
-			SimpleNode root = myLang.Module();
+		Yal2jvm myLang;
+
+		
+		String fileName = ".\\project\\projecto\\";
+		fileName += JOptionPane.showInputDialog(null,"Write the filename","Enter filename with extension", JOptionPane.QUESTION_MESSAGE);
+
+		try		{		  
+			myLang = new Yal2jvm(new java.io.FileInputStream(fileName));
+			SimpleNode root = myLang.Module(); // devolve referência para o nó raiz da árvore
 			root.dump(""); // imprime no ecrã a árvore
-			in.close();
-			//System.out.println("Valor da expressão: "+myCalc.eval(root));
+		}
+		catch(IOException e)
+		{			System.out.println("oh oh - problem with file" + e);
+		}
+		
+		//in.close();
+		//System.out.println("Valor da expressão: "+myCalc.eval(root));
 	}
 
 	int eval(SimpleNode node) {
@@ -39,7 +46,7 @@ public class yal2jvm
 }
 
 
-PARSER_END(yal2jvm)
+PARSER_END(Yal2jvm)
 
 
 <DEFAULT> SKIP : {
