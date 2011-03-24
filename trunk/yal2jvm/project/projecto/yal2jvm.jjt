@@ -1,6 +1,6 @@
 options
 {
-	LOOKAHEAD=2; // TODO: change this to only use lookahead 1
+	LOOKAHEAD=1; // TODO: change this to only use lookahead 1
 }
 PARSER_BEGIN(Yal2jvm)
 package projecto;
@@ -78,6 +78,7 @@ PARSER_END(Yal2jvm)
 | <FUNCTION: "function">
 | <MODULE: "module">
 | <SIZE: "size">
+//| <PRINT: "print">
 }
 <DEFAULT> TOKEN : {
 <INTEGER: (<DIGIT>)+>
@@ -96,7 +97,7 @@ SimpleNode Module():{}
 {
 	<MODULE> <ID> <LCHAVETA>
      (Declaration())* (Function())*
-	 <RCHAVETA>
+	 <RCHAVETA> {return jjtThis;}
 }
 
 void Declaration():{}
@@ -106,7 +107,12 @@ void Declaration():{}
 
 void Function():{}
 {
-	( <FUNCTION>(  ( ArrayElement() | <ID> ) <ASSIGN> <ID> <LPAR> ( Varlist() )? <RPAR> ) | ( <ID> <LPAR> ( Varlist() )? <RPAR> ) ) <LCHAVETA> Stmtlst() <RCHAVETA>
+	<FUNCTION>
+	<ID>	((ArrayElement())?<ASSIGN> <ID>)?
+
+	  <LPAR> ( Varlist() )? <RPAR> 
+
+	 <LCHAVETA> Stmtlst() <RCHAVETA>
 }
 
 void Varlist():{}
@@ -130,9 +136,15 @@ void Stmtlst():{}
 }
 
 void Stmt():{}
-{	  While() | If() |
+{	  While() | If() | //First() |
+	  LOOKAHEAD(3)
 	  Assign() | Call() <PVIRG>
 }
+
+// First attempt of modifying grammar
+//void First():{}
+//{//	<FUNCTION> <STRING> <LPAR>//	(<LETTER>)? <RPAR>
+//}
 
 void Assign():{}
 {
@@ -177,11 +189,12 @@ void If():{}
 
 void Call():{}
 {
-   ( "." <ID> )? <LPAR> ( ArgumentList() )? <RPAR>
+  // Added first <ID>
+   <ID> ( "." <ID> )? <LPAR> ( ArgumentList() )? <RPAR>
 }
 
 void ArgumentList():{}
-{  Argument() ( <VIRG> Argument() )*
+{   Argument() ( <VIRG> Argument() )*
 }
 
 void Argument():{}
@@ -193,7 +206,7 @@ void ArrayAccess():{}
 }
 
 void ScalarAccess():{}
-{  <ID> ( "." <SIZE> )?
+{   ( "." <SIZE> )? 
 }
 
 void Index():{}
