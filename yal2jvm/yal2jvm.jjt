@@ -1,11 +1,13 @@
 options
 {
+    //STATIC = false;
 	LOOKAHEAD=1; // TODO: change this to only use lookahead 1
-}
+} 
 PARSER_BEGIN(Yal2jvm)
 package projecto;
 import java.io.*;
 import javax.swing.JOptionPane;
+import java.util.*;
 	
 public class Yal2jvm
 { 
@@ -14,14 +16,39 @@ public class Yal2jvm
 	{
 		Yal2jvm myLang;
 
-		
-		String fileName = ".\\project\\projecto\\";
-		fileName += JOptionPane.showInputDialog(null,"Write the filename","Enter filename with extension", JOptionPane.QUESTION_MESSAGE);
+		// Read all files inside a specific folder
+		String filePath = ".\\project\\projecto\\MyFirstYalExamples\\"; 
+	    File folder = new File(filePath);
+	    File[] listOfFiles = folder.listFiles();
+		int numberOfFiles = listOfFiles.length;
+		ArrayList<String> testFiles = new ArrayList<String>();
+		String fileName = "" ;
 
-		try		{		  
-			myLang = new Yal2jvm(new java.io.FileInputStream(fileName));
-			SimpleNode root = myLang.Module(); // devolve referência para o nó raiz da árvore
-			root.dump(""); // imprime no ecrã a árvore
+		// get the file number from  folder
+		for (int i = 0; i < numberOfFiles; i++)
+		{			if (listOfFiles[i].isFile())
+			{				testFiles.add(listOfFiles[i].getName());
+	     	}
+		}
+
+		// This code was used for reading 1 file at a time		
+		// fileName += JOptionPane.showInputDialog(null,"Write the filename","Enter filename with extension", JOptionPane.QUESTION_MESSAGE);
+
+		// read the testing files and run 1 by 1
+		try		{
+			FileInputStream fis;
+		  	for (int i = 0; i < testFiles.size(); i++)
+		    {
+		       fileName = filePath + testFiles.get(i);
+		       System.out.println("\nexecuting: " + fileName + "\n");
+		       fis = new FileInputStream(fileName);
+			   myLang = new Yal2jvm(fis);
+			   SimpleNode root = myLang.Module(); // returns the reference to the node of the root from the tree
+			   root.dump(""); // print the tree on screen
+			   fis.close();
+			   ReInit(fis);
+		    }
+
 		}
 		catch(IOException e)
 		{			System.out.println("oh oh - problem with file" + e);
@@ -117,7 +144,7 @@ void Function():{}
 
 void Varlist():{}
 {
-	( ArrayElement() | <ID> ) ( <VIRG> ( ArrayElement() | <ID> ) )*
+	<ID> ( ArrayElement())? ( <VIRG> ( ArrayElement() | <ID> ) )*
 }
 
 void ArrayElement():{}
