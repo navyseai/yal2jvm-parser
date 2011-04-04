@@ -177,7 +177,7 @@ void Stmtlst():{}
 void Stmt():{}
 {	  While() | If() | //First() |
 	  LOOKAHEAD(3)
-	  Assign() | Call() <PVIRG>
+	  Assign() | <ID> Call() <PVIRG> // Added <ID>
 }
 
 // First attempt of modifying grammar
@@ -209,7 +209,7 @@ void Term():{}
 {
 	( <ADDSUB_OP> )?
 	( <INTEGER> |
-	<ID> ( ArrayAccess() | Call() | ScalarAccess() )
+	<ID> ( ArrayAccess() | LOOKAHEAD(2) Call() | ScalarAccess() )
 	)
 }
 
@@ -229,8 +229,8 @@ void If():{}
 
 void Call():{}
 {
-  // Added first <ID>
-   <ID> ( "." <ID> )? <LPAR> ( ArgumentList() )? <RPAR>
+  
+   ( "." <ID> )? <LPAR> ( ArgumentList() )? <RPAR>
 }
 
 void ArgumentList():{}
