@@ -2,22 +2,23 @@ options
 {
     STATIC = true;  // by default
 	LOOKAHEAD=1; // use lookahead 1
-} 
+}
+
+
 PARSER_BEGIN(Yal2jvm)
-package projecto;
 import java.io.*;
 import javax.swing.JOptionPane;
 import java.util.*;
+
 	
 public class Yal2jvm
 { 
- 
 	public static void main(String[] args) throws ParseException
 	{
-		Yal2jvm myLang;
+		Yal2jvm myLang; 
 
 		// Read all files inside a specific folder
-		String filePath = ".\\project\\projecto\\MyFirstYalExamples\\"; 
+		String filePath = ".\\MyFirstYalExamples\\"; 
 	    File folder = new File(filePath);
 	    File[] listOfFiles = folder.listFiles();
 		int numberOfFiles = listOfFiles.length;
