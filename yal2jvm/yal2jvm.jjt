@@ -1,7 +1,7 @@
 options
 {
-    //STATIC = false;
-	LOOKAHEAD=1; // TODO: change this to only use lookahead 1
+    STATIC = true;  // by default
+	LOOKAHEAD=1; // use lookahead 1
 } 
 PARSER_BEGIN(Yal2jvm)
 package projecto;
@@ -36,17 +36,28 @@ public class Yal2jvm
 
 		// read the testing files and run 1 by 1
 		try		{
+		   // first time
 			FileInputStream fis;
-		  	for (int i = 0; i < testFiles.size(); i++)
+			fileName = filePath + testFiles.get(0);
+			fis = new FileInputStream(fileName);
+			myLang = new Yal2jvm(fis);
+			SimpleNode root = myLang.Module(); // returns the reference to the node of the root from the tree
+			root.dump(""); // print the tree on screen
+			fis.close(); 
+			
+			// repeat for each test file
+			// int should start at 1 since first test file was already executed
+		  	for (int i = 1; i < testFiles.size(); i++)
 		    {
 		       fileName = filePath + testFiles.get(i);
 		       System.out.println("\nexecuting: " + fileName + "\n");
 		       fis = new FileInputStream(fileName);
-			   myLang = new Yal2jvm(fis);
-			   SimpleNode root = myLang.Module(); // returns the reference to the node of the root from the tree
+			   //myLang = new Yal2jvm(fis);
+			   myLang.ReInit(fis);
+			   root = myLang.Module(); // returns the reference to the node of the root from the tree
 			   root.dump(""); // print the tree on screen
-			   fis.close();
-			   ReInit(fis);
+			   fis.close(); 
+			   
 		    }
 
 		}
@@ -185,8 +196,7 @@ void Lhs():{}
 void Rhs():{}
 { 
 	( Term() ( ( <ARITH_OP> | <BITWISE_OP> | <ADDSUB_OP> ) Term() )? )
-	|
-	"[" ArraySize() "]"
+	|	"[" ArraySize() "]"
 }
 
 void ArraySize():{}
@@ -196,7 +206,9 @@ void ArraySize():{}
 
 void Term():{}
 {
-	( <ADDSUB_OP> )? ( <INTEGER> | /*LOOKAHEAD(3)*/ <ID>	( ArrayAccess() | (	( Call() | ScalarAccess()) ))
+	( <ADDSUB_OP> )?
+	( <INTEGER> |
+	<ID> ( ArrayAccess() | Call() | ScalarAccess() )
 	)
 }
 
@@ -221,7 +233,7 @@ void Call():{}
 }
 
 void ArgumentList():{}
-{   Argument() ( <VIRG> Argument() )*
+{    Argument() ( <VIRG> Argument() )*
 }
 
 void Argument():{}
