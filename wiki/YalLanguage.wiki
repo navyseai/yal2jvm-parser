@@ -1,6 +1,6 @@
-#summary This page is the actual assignment
+#summary useful to know before going coding
 
-= Introduction =
+= Description =
 
 Main characteristics of the yal language
 
