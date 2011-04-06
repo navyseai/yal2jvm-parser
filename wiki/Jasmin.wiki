@@ -65,4 +65,4 @@ I will put it with my words: *
   * We compile *.yal* files with our *yal2jvm* compiler to JVM instructions.
   * Then we use *jasmin* to compile the program to *Java Bytecodes*
 
-https://lh4.googleusercontent.com/_jl4cTmNoX_o/TZx4je9qEMI/AAAAAAAAI0U/aTgx3by1FBE/compilationflow.PNG
+http://i193.photobucket.com/albums/z251/anlazarov/compilationflow.png
