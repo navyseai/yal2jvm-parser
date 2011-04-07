@@ -1,4 +1,4 @@
-import java.util.ArrayList;
+import java.util.HashMap;
 
 
 /**
@@ -8,8 +8,8 @@ import java.util.ArrayList;
 public class FuncStruct {
 
 	public String name, returnName, returnType, returnValue;
-	public ArrayList<VarStruct> inputList;
-	public ArrayList<VarStruct> varList;
+	public HashMap<String,VarStruct> inputList;
+	public HashMap<String, VarStruct> varList;
 	
 
 	/**
@@ -20,8 +20,8 @@ public class FuncStruct {
 	{
 		this.name = name;
 		this.returnType = "void";
-		this.inputList = new ArrayList<VarStruct>();
-		this.varList = new ArrayList<VarStruct>();
+		this.inputList = new HashMap<String,VarStruct>();
+		this.varList = new HashMap<String,VarStruct>();
 	}
 	
 	/**
@@ -35,26 +35,28 @@ public class FuncStruct {
 		this.name = name;
 		this.returnType = returnType;
 		this.returnName = returnName;
-		this.inputList = new ArrayList<VarStruct>();
-		this.varList = new ArrayList<VarStruct>();
+		this.inputList = new HashMap<String,VarStruct>();
+		this.varList = new HashMap<String,VarStruct>();
 	}
 	
-	public void addInput(VarStruct a)
+	public void addInput(String name, String type, int line)
 	{
-		this.inputList.add(a);
+		VarStruct temp = new VarStruct(name, type, line);
+		this.inputList.put(name,temp);
 	}
 	
-	public void addVar(VarStruct a)
+	public void addVar(String name, String type, int line)
 	{
-		this.varList.add(a);
+		VarStruct temp = new VarStruct(name, type, line);
+		this.varList.put(name,temp);
 	}
 	
-	public ArrayList<VarStruct> getInput()
+	public HashMap<String,VarStruct> getInput()
 	{
 		return this.inputList;
 	}
 	
-	public ArrayList<VarStruct> getVars()
+	public HashMap<String,VarStruct> getVars()
 	{
 		return this.varList;
 	}
