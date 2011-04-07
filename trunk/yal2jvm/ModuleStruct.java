@@ -1,4 +1,4 @@
-import java.util.ArrayList;
+import java.util.HashMap;
 
 
 /**
@@ -8,8 +8,8 @@ import java.util.ArrayList;
 public class ModuleStruct {
 
 	public String name;
-	public ArrayList<FuncStruct> funcList;
-	public ArrayList<VarStruct> varList;
+	public HashMap<String, FuncStruct> funcList;
+	public HashMap<String, VarStruct> varList;
 	
 	/**
 	 * Constructor
@@ -18,34 +18,36 @@ public class ModuleStruct {
 	public ModuleStruct(String name)
 	{
 		this.name = name;
-		this.funcList = new ArrayList<FuncStruct>();
-		this.varList = new ArrayList<VarStruct>();
+		this.funcList = new HashMap<String, FuncStruct>();
+		this.varList = new HashMap<String, VarStruct>();
 		
 	}
 	
 	/**
 	 * @param newFunc function from module
 	 */
-	public void addFunc(FuncStruct newFunc)
+	public void addFunc(String name, String returnType, String returnName)
 	{
-		funcList.add(newFunc);
+		FuncStruct temp = new FuncStruct(name, returnType, returnName);
+		funcList.put(name, temp);
 	}
 	
 	
 	/**
 	 * @param newVar global variable
 	 */
-	public void addVar(VarStruct newVar)
+	public void addVar(String name, String type, int line)
 	{
-		varList.add(newVar);
+		VarStruct temp = new VarStruct(name, type, line);
+		varList.put(name, temp);
 	}
 	
-	public  ArrayList<FuncStruct> getFunctions()
+	public HashMap<String, FuncStruct> getFunctions()
 	{
 		return this.funcList;
 	}
 	
-	public  ArrayList<VarStruct> getVariables()
+	public HashMap<String, VarStruct> getVariables()
 	{
 		return this.varList;
 	}
