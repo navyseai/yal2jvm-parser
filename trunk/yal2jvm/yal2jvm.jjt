@@ -82,6 +82,7 @@ public class Yal2jvm
 //		switch(node.id) {//			case CalculatorTreeConstants.JJTADD : return eval( lhs ) + eval( rhs );//			case CalculatorTreeConstants.JJTSUB : return eval( lhs ) - eval( rhs );//			case CalculatorTreeConstants.JJTMUL : return eval( lhs ) * eval( rhs );//			case CalculatorTreeConstants.JJTDIV : return eval( lhs ) / eval( rhs );//		default : // abort//				System.out.println("Operador ilegal!");//				System.exit(1);//			}
 		return 0;
 	}
+
 }
 
 
@@ -249,6 +250,6 @@ void ScalarAccess():{}
 {   ( "." <SIZE> )? 
 }
 
-void Index():{}
-{  <ID> | <INTEGER>
+void Index():{Token t1;}
+{  t1= <ID> | t1= <INTEGER>
 }
