@@ -66,11 +66,10 @@ public class Yal2jvm
 		{			System.out.println("oh oh - problem with file" + e);
 		}
 		
-		//in.close();
-		//System.out.println("Valor da expressão: "+myCalc.eval(root));
+		//System.out.println("Value of expression: "+myCalc.eval(root));
 	}
 
-	int eval(SimpleNode node) {
+	public int eval(SimpleNode node) {
 		if(node.jjtGetNumChildren() == 0) // leaf node with integer value
 			return node.val;
 		else if(node.jjtGetNumChildren() == 1) // only one child
@@ -78,10 +77,14 @@ public class Yal2jvm
 		SimpleNode lhs = (SimpleNode) node.jjtGetChild(0); //left child
 		SimpleNode rhs = (SimpleNode) node.jjtGetChild(1); // right child
 
-		// TODO: Delete
-//		switch(node.id) {//			case CalculatorTreeConstants.JJTADD : return eval( lhs ) + eval( rhs );//			case CalculatorTreeConstants.JJTSUB : return eval( lhs ) - eval( rhs );//			case CalculatorTreeConstants.JJTMUL : return eval( lhs ) * eval( rhs );//			case CalculatorTreeConstants.JJTDIV : return eval( lhs ) / eval( rhs );//		default : // abort//				System.out.println("Operador ilegal!");//				System.exit(1);//			}
+		// TODO
+    	//switch (node.id) {	    //case JJTMODULE:        return new this.eval(id);//	    case JJTDECLARATION:   return new yalNodeDeclaration(id);//	    case JJTFUNCTION:      return new yalNodeFunction(id);//	    case JJTVARLIST:       return new yalNodeVarList(id);//	    case JJTINDEX:         return new yalNodeIndex(id);//	    case JJTASSIGN:        return new yalNodeAssign(id);//	    case JJTEXPRESSION:    return new yalNodeExpression(id);//	    case JJTWHILE:         return new yalNodeWhile(id);//	    case JJTCALL:          return new yalNodeCall(id);		//default : // abort		//		System.out.println("Operador ilegal!");		//		System.exit(1);	//	}
 		return 0;
 	}
+
+	private static void setNode(SimpleNode node, Token t) {
+        ((myNode)node).setData(t.toString(), t.beginLine, t.beginColumn);
+    }
 
 }
 
@@ -118,7 +121,7 @@ PARSER_END(Yal2jvm)
 | <FUNCTION: "function">
 | <MODULE: "module">
 | <SIZE: "size">
-//| <PRINT: "print">
+
 }
 <DEFAULT> TOKEN : {
 <INTEGER: (<DIGIT>)+>
@@ -130,34 +133,35 @@ PARSER_END(Yal2jvm)
 
 SimpleNode Expression(): {}
 {
-	{return jjtThis;} // código Java entre chavetas
+	{return jjtThis;} // java code between brackets
 }
 
-SimpleNode Module():{}
+SimpleNode Module():{Token t1;}
 {
-	<MODULE> <ID> <LCHAVETA>
+	<MODULE> t1=<ID> { setNode(jjtThis, t1); } <LCHAVETA> // write down the module name
      (Declaration())* (Function())*
 	 <RCHAVETA> {return jjtThis;}
 }
 
-void Declaration():{}
+void Declaration():{Token t1 = null;}
 {
-	( <ID> (ArrayElement())? ) ( <ASSIGN> ( ( "[" ArraySize() "]" ) | ( <ADDSUB_OP> )? <INTEGER> ) )? <PVIRG>
+	( <ID> { setNode(jjtThis, t1); }  (ArrayElement())? )
+	( <ASSIGN> ( ( "[" ArraySize() "]" ) | ( <ADDSUB_OP> )? <INTEGER> ) )? <PVIRG>
 }
 
-void Function():{}
+void Function():{Token t1;}
 {
 	<FUNCTION>
-	<ID>	((ArrayElement())?<ASSIGN> <ID>)?
+	t1=<ID> { setNode(jjtThis, t1); } 	((ArrayElement())?<ASSIGN> <ID>)?
 
 	  <LPAR> ( Varlist() )? <RPAR> 
 
 	 <LCHAVETA> Stmtlst() <RCHAVETA>
 }
 
-void Varlist():{}
+void Varlist():{Token t1;}
 {
-	<ID> ( ArrayElement())? ( <VIRG> ( ArrayElement() | <ID> ) )*
+	t1=<ID> { setNode(jjtThis, t1); } ( ArrayElement())? ( <VIRG> ( ArrayElement() | <ID> ) )*
 }
 
 void ArrayElement():{}
@@ -177,46 +181,42 @@ void Stmtlst():{}
 
 void Stmt():{}
 {	  While() | If() | //First() |
-	  LOOKAHEAD(3)
+	  LOOKAHEAD(2)
 	  Assign() | <ID> Call() <PVIRG> // Added <ID>
 }
-
-// First attempt of modifying grammar
-//void First():{}
-//{//	<FUNCTION> <STRING> <LPAR>//	(<LETTER>)? <RPAR>
-//}
 
 void Assign():{}
 {
 	Lhs() <ASSIGN> Rhs() <PVIRG>
 }
 
-void Lhs():{}
-{	<ID> ( ArrayAccess() | ScalarAccess())
+void Lhs():{Token t1;}
+{	t1=<ID> { setNode(jjtThis, t1); }  ( ArrayAccess() | ScalarAccess())
 }
 
-void Rhs():{}
+void Rhs():{Token t1;}
 { 
-	( Term() ( ( <ARITH_OP> | <BITWISE_OP> | <ADDSUB_OP> ) Term() )? )
+	( Term() ( ( t1=<ARITH_OP> | t1=<BITWISE_OP> | t1=<ADDSUB_OP> ) { setNode(jjtThis, t1); }  Term() )? )
 	|	"[" ArraySize() "]"
 }
 
-void ArraySize():{}
+void ArraySize():{Token t1;}
 { 
-	(<ID> ScalarAccess()) | <INTEGER>
+	((t1=<ID> ScalarAccess()) | t1=<INTEGER>) { setNode(jjtThis, t1); } 
 }
 
-void Term():{}
+
+void Term():{Token t1, t2 = null;}
 {
-	( <ADDSUB_OP> )?
-	( <INTEGER> |
-	<ID> ( ArrayAccess() | LOOKAHEAD(2) Call() | ScalarAccess() )
-	)
+	( t2=<ADDSUB_OP> { setNode(jjtThis, t2); }  )?
+	( t1=<INTEGER> |
+	t1=<ID> ( ArrayAccess() | LOOKAHEAD(2) Call() | ScalarAccess() )
+	) { setNode(jjtThis, t1); } 
 }
 
-void Exprtest():{}
+void Exprtest():{Token t1;}
 {
-	<LPAR> Lhs() <RELA_OP> Rhs() <RPAR>
+	<LPAR> Lhs() t1=<RELA_OP> { setNode(jjtThis, t1); }  Rhs() <RPAR>
 }
 
 void While():{}
@@ -228,28 +228,28 @@ void If():{}
 {  <IF> Exprtest() <LCHAVETA> Stmtlst() <RCHAVETA> ( <ELSE> <LCHAVETA> Stmtlst() <RCHAVETA> )?
 }
 
-void Call():{}
+void Call():{Token t1 = null;}
 {
   
-   ( "." <ID> )? <LPAR> ( ArgumentList() )? <RPAR>
+   ( "." t1=<ID> { setNode(jjtThis, t1); }  )? <LPAR> ( ArgumentList() )? <RPAR>
 }
 
 void ArgumentList():{}
 {    Argument() ( <VIRG> Argument() )*
 }
 
-void Argument():{}
-{  ( <ID> | <STRING> | <INTEGER> )
+void Argument():{Token t1;}
+{  ( t1=<ID> | t1=<STRING> | t1=<INTEGER> ) { setNode(jjtThis, t1); } 
 }
 
 void ArrayAccess():{}
 {  "[" Index() "]"
 }
 
-void ScalarAccess():{}
-{   ( "." <SIZE> )? 
+void ScalarAccess():{Token t1= null;}
+{   ( "." t1= <SIZE> { setNode(jjtThis, t1); } )? 
 }
 
 void Index():{Token t1;}
-{  t1= <ID> | t1= <INTEGER>
+{  (t1= <ID> | t1= <INTEGER>) { setNode(jjtThis, t1); } 
 }
