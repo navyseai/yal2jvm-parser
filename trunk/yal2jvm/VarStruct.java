@@ -5,7 +5,7 @@
  */
 public class VarStruct {
 
-	String name, type, value;
+	String name, type;
 	int line;
 	
 	/**
@@ -19,11 +19,6 @@ public class VarStruct {
 		this.type = type;
 		this.line = line;
 	}
-	
-	public void setValue(String a)
-	{
-		this.value = a;
-	}
 
 	public String getName() {
 		return name;
@@ -31,10 +26,6 @@ public class VarStruct {
 
 	public String getType() {
 		return type;
-	}
-
-	public String getValue() {
-		return value;
 	}
 
 	public int getLine() {

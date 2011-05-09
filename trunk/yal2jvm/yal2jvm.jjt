@@ -78,7 +78,9 @@ public class Yal2jvm
 		SimpleNode rhs = (SimpleNode) node.jjtGetChild(1); // right child
 
 		// TODO
-    	//switch (node.id) {	    //case JJTMODULE:        return new this.eval(id);//	    case JJTDECLARATION:   return new yalNodeDeclaration(id);//	    case JJTFUNCTION:      return new yalNodeFunction(id);//	    case JJTVARLIST:       return new yalNodeVarList(id);//	    case JJTINDEX:         return new yalNodeIndex(id);//	    case JJTASSIGN:        return new yalNodeAssign(id);//	    case JJTEXPRESSION:    return new yalNodeExpression(id);//	    case JJTWHILE:         return new yalNodeWhile(id);//	    case JJTCALL:          return new yalNodeCall(id);		//default : // abort		//		System.out.println("Operador ilegal!");		//		System.exit(1);	//	}
+    	//switch (node.id) {	    //case JJTMODULE:        return new this.eval(id)
+	    //case JJTFUNCTION:
+	    //case JJTVAR:		//default : // abort		//		System.out.println("Operador ilegal!");		//		System.exit(1);		//}
 		return 0;
 	}
 
@@ -131,37 +133,45 @@ PARSER_END(Yal2jvm)
 | <STRING: "\"" (["a"-"z","A"-"Z","0"-"9",":"," ","="])+ "\"">
 }
 
-SimpleNode Expression(): {}
-{
-	{return jjtThis;} // java code between brackets
-}
 
-SimpleNode Module():{Token t1;}
+myNodeModule Module() #Module:{Token t1;}
 {
-	<MODULE> t1=<ID> { setNode(jjtThis, t1); } <LCHAVETA> // write down the module name
+	<MODULE> t1=<ID> { setNode(jjtThis, t1); }
+	 <LCHAVETA> // write down the module name
      (Declaration())* (Function())*
-	 <RCHAVETA> {return jjtThis;}
+	 <RCHAVETA> {return (myNodeModule)jjtThis;}
 }
 
-void Declaration():{Token t1 = null;}
+void Declaration():{Token t1=null, t2=null;}
 {
-	( <ID> { setNode(jjtThis, t1); }  (ArrayElement())? )
-	( <ASSIGN> ( ( "[" ArraySize() "]" ) | ( <ADDSUB_OP> )? <INTEGER> ) )? <PVIRG>
+	{
+  		boolean isMinus = false;
+  		int n;	}
+	( t1=<ID> { setNode(jjtThis, t1); }  (ArrayElement())? )
+	( <ASSIGN>
+	( ( "[" ArraySize() "]" ) |
+
+	( <ADDSUB_OP>		{ isMinus=true;	}
+	)? t2=<INTEGER>
+	{
+	  //n = Integer.Parse(t2.image)
+	  //setNode(jjtThis, : n = isMinus ? n*-1 : n);	})
+	 )? <PVIRG>
 }
 
-void Function():{Token t1;}
+void Function() #Function :{Token t1, t2=null;}
 {
 	<FUNCTION>
-	t1=<ID> { setNode(jjtThis, t1); } 	((ArrayElement())?<ASSIGN> <ID>)?
+	t1=<ID> { setNode(jjtThis, t1); } 	((ArrayElement())?<ASSIGN> t2=<ID> { setNode(jjtThis, t2); }	)?
 
 	  <LPAR> ( Varlist() )? <RPAR> 
 
 	 <LCHAVETA> Stmtlst() <RCHAVETA>
 }
 
-void Varlist():{Token t1;}
+void Varlist():{Token t1, t2=null;}
 {
-	t1=<ID> { setNode(jjtThis, t1); } ( ArrayElement())? ( <VIRG> ( ArrayElement() | <ID> ) )*
+	t1=<ID> { setNode(jjtThis, t1); } ( ArrayElement())? ( <VIRG> ( ArrayElement() | t2=<ID> {setNode(jjtThis, t2); } ) )*
 }
 
 void ArrayElement():{}
@@ -179,7 +189,7 @@ void Stmtlst():{}
 	( Stmt() )*
 }
 
-void Stmt():{}
+void Stmt()#void:{}
 {	  While() | If() | //First() |
 	  LOOKAHEAD(2)
 	  Assign() | <ID> Call() <PVIRG> // Added <ID>
@@ -238,8 +248,10 @@ void ArgumentList():{}
 {    Argument() ( <VIRG> Argument() )*
 }
 
-void Argument():{Token t1;}
-{  ( t1=<ID> | t1=<STRING> | t1=<INTEGER> ) { setNode(jjtThis, t1); } 
+void Argument() #void:{Token t1;}
+{      ( t1=<ID> { setNode(jjtThis, t1); } #Variable(0)
+    | t1=<STRING> { setNode(jjtThis, t1); } #ValueStr(0)
+    | t1=<INTEGER> { setNode(jjtThis, t1); } #ValueInt(0))
 }
 
 void ArrayAccess():{}

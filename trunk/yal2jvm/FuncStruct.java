@@ -7,7 +7,7 @@ import java.util.HashMap;
  */
 public class FuncStruct {
 
-	public String name, returnName, returnType, returnValue;
+	public String name, returnName, returnType;
 	public HashMap<String,VarStruct> inputList;
 	public HashMap<String, VarStruct> varList;
 	
@@ -27,8 +27,8 @@ public class FuncStruct {
 	/**
 	 * Constructor
 	 * @param name The name of the function
-	 * @param returnType The type of the returning value
-	 * @param returnName The name of the returning value
+	 * @param returnType The type of the returning variable
+	 * @param returnName The name of the returning variable
 	 */
 	public FuncStruct(String name, String returnType, String returnName)
 	{
