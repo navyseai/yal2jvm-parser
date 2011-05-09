@@ -1,5 +1,5 @@
 
-public class myNode extends SimpleNode implements Node{
+public class myNode extends SimpleNode implements Yal2jvmTreeConstants/*implements Node*/{
 
 	private String token;
 	private int startLine;
@@ -10,12 +10,6 @@ public class myNode extends SimpleNode implements Node{
 		// TODO Auto-generated constructor stub
 	}
 
-	@Override
-	public void jjtAddChild(Node n, int i) {
-		// TODO Auto-generated method stub
-		
-	}
-
 	// Save information about the symbols
 	public void setData(String token, int startLine, int endLine)
 	{
@@ -24,40 +18,41 @@ public class myNode extends SimpleNode implements Node{
 		this.endLine = endLine;
 	}
 	
-	@Override
-	public void jjtClose() {
-		// TODO Auto-generated method stub
-		
-	}
+	
+	public static Node jjtCreate(int id) {
+        switch (id) {
+        	case JJTMODULE:        return new myNodeModule(id);
+        	case JJTDECLARATION :  return new myNodeDeclaration(id);
+        	case JJTFUNCTION : return new myNodeFunction(id);
+        	case JJTVARLIST :
+        	case JJTARRAYELEMENT:
+        	
+        	case JJTASSIGN : return new myNodeAssign(id);
+        	case JJTLHS :
+        	case JJTRHS :
+        	case JJTARRAYSIZE:
+        	case JJTTERM :
+        	case JJTEXPRTEST : return new myNodeExprtest(id);
+        	case JJTWHILE : return new myNodeWhile(id);
+        	case JJTIF :
+        	case JJTCALL : return new myNodeCall(id);
+        	
 
-	@Override
-	public Node jjtGetChild(int i) {
-		// TODO Auto-generated method stub
-		return null;
-	}
+        	case JJTARRAYACCESS :
+        	case JJTSCALARACCESS :
+        	case JJTINDEX :
 
-	@Override
-	public int jjtGetNumChildren() {
-		// TODO Auto-generated method stub
-		return 0;
-	}
-
-	@Override
-	public Node jjtGetParent() {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public void jjtOpen() {
-		// TODO Auto-generated method stub
-		
-	}
-
-	@Override
-	public void jjtSetParent(Node n) {
-		// TODO Auto-generated method stub
-		
-	}
+        	// avoid going to exception
+        	case JJTSTMTLST :
+        	case JJTARGUMENTLIST :
+        		
+        	// void return
+          	// case JJTSTMT :  
+            //case JJTARGUMENT :
+        		
+        default:
+            throw new RuntimeException("Unknown node id: " + id);
+        }
+    }
 
 }
